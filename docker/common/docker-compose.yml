@@ -1,10 +1,15 @@
 version: '2'
 services:
   configserver:
+    # 每个正在启动的服务都会有一个标签，这个标签将成为Docker实例启动时的DNS条目
+    # 其他服务将通过这个DNS条目访问这个服务
+    # Docker Compose 将首先尝试在本地Docker存储库中查找要启动的目标镜像。如果找不到，他将检查中央Docker Hub
     image: johncarnell/tmx-confsvr:chapter3
     ports:
+       # 这个条目定义了已启动的Docker容器上的端口号，这个端口将暴露给外部世界
        - "8888:8888"
     environment:
+      # 环境标签用于将环境变量传递到启动的Docker镜像。在本例中，将在启动的Docker镜像上设置ENCRYPT_KEY环境变量
       ENCRYPT_KEY:       "IMSYMMETRIC"
   database:
     image: postgres:9.5
@@ -20,6 +25,7 @@ services:
       - "8080:8080"
     environment:
       PROFILE: "default"
+      # 这是个示例，说明在Docker Compose文件的某个部分中定义的服务如何用作其他服务中的DNS名称
       CONFIGSERVER_URI: "http://configserver:8888"
       CONFIGSERVER_PORT:   "8888"
       DATABASESERVER_PORT: "5432"
